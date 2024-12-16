@@ -40,3 +40,4 @@ Note: If you don't specify a port, it will use the default port 5555.
 
 ---
 [![Telegram](https://img.shields.io/badge/Telegram-Join%20Chat-blue?style=flat-square&logo=telegram)](https://t.me/ximistuffschat)
+![Downloads](https://img.shields.io/github/downloads/Magisk-Modules-Alt-Repo/wadbd/total.svg)
