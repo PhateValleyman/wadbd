@@ -36,3 +36,7 @@ Note: If you don't specify a port, it will use the default port 5555.
 
 ### `wadbd disable-on-boot`
 - Disables wirelss adbd on boot
+
+
+---
+[![Telegram](https://img.shields.io/badge/Telegram-Join%20Chat-blue?style=flat-square&logo=telegram)](https://t.me/ximistuffschat)
