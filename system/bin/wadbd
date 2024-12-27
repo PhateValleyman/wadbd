@@ -14,6 +14,7 @@ usage() {
     echo -e "  $cmd status                - Show the status of wireless ADB."
     echo -e "  $cmd enable-on-boot <port> - Enable wireless ADB on boot with the specified port."
     echo -e "  $cmd disable-on-boot       - Disable wireless ADB on boot."
+    echo -e "  $cmd --import-key <path>   - Import an adbkey.pub file to authorize ADB without prompt."
     echo -e "\nNote: If you don't specify a port, it will use the default port 5555."
     exit 1
 }
