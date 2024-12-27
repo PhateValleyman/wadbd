@@ -18,6 +18,8 @@ Commands:
   wadbd enable-on-boot <port> - Enable wireless ADB on boot with the specified port.
   wadbd disable-on-boot       - Disable wireless ADB on boot.
   wadbd --import-key <path>   - Import an adbkey.pub file to authorize ADB without prompt.
+wadbd --backup <path>         - Backup authorized adb_keys     wadbd --restore <path>        -restore backed up adb_keys
+wadbd --clear-keys            - Revokes all authorized Keys
 
 Note: If you don't specify a port, it will use the default port 5555.
 ```
@@ -52,10 +54,23 @@ Note: If you don't specify a port, it will use the default port 5555.
 ### `wadbd disable-on-boot`
 - Disables wirelss adbd on boot
 
-#### `wadbd --import-key <path to adbkey.pub>`
-- If your device is not prompting to authorize ADB for some reason, you can use this to directly import ADB keys to authorize your device.
-- This might not work on all devices.
 
+
+# Experimental 👨‍🔬
+⚠️ These Features/Commands are Experimental and are not guaranteed to work on all devices. Use them at your own risk. These features are not available in WebUI and will `never` be added.
+
+### `wadbd --import-keys <path-to-adbkey.pub>`
+- For some reason , If your device is not prompting to authorize ADB, you can use this command to directly import keys.
+- The adbkey.pub file is typically located at:
+  - Windows: `C:\Users\<username>\.android\adbkey.pub`
+  - Linux: `/home/<username>/.android/adbkey.pub`
+  - Termux: `/data/data/com.termux/files/home/.android/adbkey.pub`
+
+### `wadbd --backup <path>` / `wadbd --restore <path>`
+- Used to backup or restore authorized keys
+
+### `wadbd --clear-keys`
+- Revokes all authorized keys
 ---
 ## License
 
