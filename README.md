@@ -59,17 +59,17 @@ Note: If you don't specify a port, it will use the default port 5555.
 # Experimental 👨‍🔬
 ⚠️ These Features/Commands are Experimental and are not guaranteed to work on all devices. Use them at your own risk. These features are not available in WebUI and will `never` be added.
 
-### `wadbd --import-keys <path-to-adbkey.pub>`
+#### `wadbd --import-keys <path-to-adbkey.pub>`
 - For some reason , If your device is not prompting to authorize ADB, you can use this command to directly import keys.
 - The adbkey.pub file is typically located at:
   - Windows: `C:\Users\<username>\.android\adbkey.pub`
   - Linux: `/home/<username>/.android/adbkey.pub`
   - Termux: `/data/data/com.termux/files/home/.android/adbkey.pub`
 
-### `wadbd --backup <path>` / `wadbd --restore <path>`
+#### `wadbd --backup <path>` / `wadbd --restore <path>`
 - Used to backup or restore authorized keys
 
-### `wadbd --clear-keys`
+#### `wadbd --clear-keys`
 - Revokes all authorized keys
 ---
 ## License
