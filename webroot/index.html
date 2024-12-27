@@ -5,10 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Wireless ADB Manager</title>
     <style>
+        :root {
+            /* Dark theme (default) */
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e2f;
+            --bg-tertiary: #2e2e3e;
+            --text-primary: #ffffff;
+            --accent-color: #4caf50;
+            --button-color: #4caf50;
+            --button-hover: #45a049;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f5f5;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0f0f0;
+            --text-primary: #333333;
+            --accent-color: #4caf50;
+            --button-color: #4caf50;
+            --button-hover: #45a049;
+        }
+
+        [data-theme="pink"] {
+            --bg-primary: #fce4ec;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f8bbd0;
+            --text-primary: #880e4f;
+            --accent-color: #ec407a;
+            --button-color: #ec407a;
+            --button-hover: #d81b60;
+        }
+
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #121212;
-            color: #ffffff;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             margin: 0;
             padding: 0;
             display: flex;
@@ -17,24 +48,40 @@
             height: 100vh;
             width: 100%;
             overflow-y: auto;
+            transition: background-color 0.3s ease;
         }
 
         header {
             width: 100%;
             padding: 20px;
-            background-color: #1e1e2f;
+            background-color: var(--bg-secondary);
             text-align: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             position: sticky;
             top: 0;
             z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         header h1 {
             margin: 0;
             font-size: 22px;
-            color: #4caf50;
+            color: var(--accent-color);
             user-select: none;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            right: 20px;
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
         }
 
         .container {
@@ -49,16 +96,17 @@
         }
 
         .card {
-            background-color: #1e1e2f;
+            background-color: var(--bg-secondary);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             transform: translateZ(0);
+            transition: background-color 0.3s ease;
         }
 
         .card h2 {
             font-size: 18px;
-            color: #4caf50;
+            color: var(--accent-color);
             margin-bottom: 15px;
             user-select: none;
         }
@@ -80,8 +128,8 @@
             font-size: 16px;
             border: none;
             border-radius: 5px;
-            background-color: #2e2e3e;
-            color: #ffffff;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
             box-sizing: border-box;
         }
 
@@ -92,7 +140,7 @@
         }
 
         button {
-            background-color: #4caf50;
+            background-color: var(--button-color);
             color: white;
             border: none;
             padding: 10px 15px;
@@ -102,16 +150,17 @@
             flex: 1 1 45%;
             touch-action: manipulation;
             user-select: none;
+            transition: background-color 0.3s ease;
         }
 
         button:active {
-            background-color: #45a049;
+            background-color: var(--button-hover);
             transform: translateY(1px);
         }
 
         .output {
-            background-color: #1e1e2f;
-            color: #ffffff;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
             padding: 15px;
             border-radius: 5px;
             font-family: monospace;
@@ -122,7 +171,7 @@
 
         footer {
             width: 100%;
-            background-color: #1e1e2f;
+            background-color: var(--bg-secondary);
             padding: 20px 0;
             text-align: center;
             display: flex;
@@ -144,17 +193,17 @@
         .info-section {
             margin-top: 20px;
             padding: 15px;
-            background-color: #2e2e3e;
+            background-color: var(--bg-tertiary);
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            color: #ffffff;
+            color: var(--text-primary);
             transform: translateZ(0);
         }
 
         .info-section h3 {
             margin: 0 0 10px 0;
             font-size: 16px;
-            color: #4caf50;
+            color: var(--accent-color);
             user-select: none;
         }
 
@@ -167,6 +216,7 @@
 <body>
     <header>
         <h1>Wireless ADB Manager</h1>
+        <button class="theme-toggle" onclick="toggleTheme()">Theme</button>
     </header>
     <main class="container">
         <div class="card">
@@ -210,6 +260,20 @@
 
     <script>
         let callbackCounter = 0;
+        const themes = ['dark', 'light', 'pink'];
+        let currentThemeIndex = localStorage.getItem('themeIndex') ? parseInt(localStorage.getItem('themeIndex')) : 0;
+
+        function setTheme(index) {
+            const theme = themes[index];
+            document.body.setAttribute('data-theme', theme === 'dark' ? '' : theme);
+            localStorage.setItem('themeIndex', index);
+        }
+
+        function toggleTheme() {
+            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+            setTheme(currentThemeIndex);
+        }
+        setTheme(currentThemeIndex);
 
         function getUniqueCallbackName(base) {
             return `${base}_callback_${Date.now()}_${callbackCounter++}`;
