@@ -163,7 +163,7 @@ import_adb_key() {
     fi
     
 if grep -qFf "$key_file" "$adb_keys_file"; then
-    echo -e "${GREEN}Key is already present in adb_keys.${NC}"
+    echo -e "${PINK}Key is already present in adb_keys.${NC}"
 else
     cat "$key_file" >>"$adb_keys_file"
     echo "" >>"$adb_keys_file"  
