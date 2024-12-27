@@ -56,7 +56,7 @@ Note: If you don't specify a port, it will use the default port 5555.
 
 
 
-# Experimental 👨‍🔬
+# Experimental 👩‍🔬
 ⚠️ These Features/Commands are Experimental and are not guaranteed to work on all devices. Use them at your own risk. These features are not available in WebUI and will `never` be added.
 
 #### `wadbd --import-keys <path-to-adbkey.pub>`
