@@ -1,5 +1,5 @@
 # Wireless ADB Controller  
-A simple Magisk module to control wireless ADB daemon. It allows you to start wireless ADB in current session, start automatically on boot, set custom ports, and manage ADB keys (backup/restore/import).
+A simple Magisk module to control wireless ADB daemon. It allows you to start wireless ADB in current session, start automatically on boot, set custom ports, and manage ADB keys (backup/restore/import). It supports KernelSU WebUI as well.
 
 ![Last Updated](https://img.shields.io/badge/Updated-2024--12--27-blue)
 
