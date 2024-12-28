@@ -117,7 +117,7 @@ setprop service.adb.tcp.port $port
 stop adbd
 start adbd
 
-while [ "$(getprop sys.boot_completed)" != "1" ]; do
+while [ "\$(getprop sys.boot_completed)" != "1" ]; do
     sleep 5
 done
 
