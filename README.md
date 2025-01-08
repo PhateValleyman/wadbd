@@ -29,9 +29,8 @@ wadbd --backup <path>         - Backup authorized adb_keys
 wadbd --restore <path>        -restore backed up adb_keys
 
 wadbd --clear-keys            - Revokes all authorized Keys
-
-Note: If you don't specify a port, it will use the default port 5555.
 ```
+- Note: If you don't specify a port, it will use the default port 5555.
 # WebUI
 
 - You Can Also Control This Module Using Kernel Su or Apatch WebUI
