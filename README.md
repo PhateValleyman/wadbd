@@ -13,15 +13,24 @@ A simple Magisk module to control wireless ADB daemon. It allows you to start wi
 ```
 Usage: wadbd [on <port>|off|status|enable-on-boot <port>|disable-on-boot]
 
-Commands:
-  wadbd on <port>              - Enable wireless ADB on the specified port.
-  wadbd off                   - Disable wireless ADB.
-  wadbd status                - Show the status of wireless ADB.
-  wadbd enable-on-boot <port> - Enable wireless ADB on boot with the specified port.
-  wadbd disable-on-boot       - Disable wireless ADB on boot.
-  wadbd --import-key <path>   - Import an adbkey.pub file to authorize ADB without prompt.
-  wadbd --backup <path>         - Backup authorized adb_keys     wadbd --restore <path>        -restore backed up adb_keys
-  wadbd --clear-keys            - Revokes all authorized Keys
+ Commands:
+wadbd on <port>              - Enable wireless ADB on the specified port.
+
+wadbd off                   - Disable wireless ADB.
+
+wadbd status                - Show the status of wireless ADB.
+
+wadbd enable-on-boot <port> - Enable wireless ADB on boot with the specified port.
+
+wadbd disable-on-boot       - Disable wireless ADB on boot.
+
+wadbd --import-key <path>   - Import an adbkey.pub file to authorize ADB without prompt.
+
+wadbd --backup <path>         - Backup authorized adb_keys
+
+wadbd --restore <path>        -restore backed up adb_keys
+
+wadbd --clear-keys            - Revokes all authorized Keys
 
 Note: If you don't specify a port, it will use the default port 5555.
 ```
