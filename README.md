@@ -11,9 +11,7 @@ A simple Magisk module to control wireless ADB daemon. It allows you to start wi
 ---
 ## Commands  
 ```
-Usage: wadbd [on <port>|off|status|enable-on-boot <port>|disable-on-boot]
 
- Commands:
 wadbd on <port>              - Enable wireless ADB on the specified port.
 
 wadbd off                   - Disable wireless ADB.
