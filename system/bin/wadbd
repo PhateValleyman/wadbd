@@ -1,323 +1,274 @@
 #!/system/bin/sh
+# wadbd by @rhythmcache
 
-# === Configuration ===
-HOSTS_FILE="/data/adb/modules/Malwack/system/etc/hosts"
-TEMP_FILE="$(mktemp)"
-LOG_FILE="/data/adb/malwack.log"
-URLS_FILE="/data/adb/modules/Malwack/urls.txt"
-CUSTOM_HOSTS_DIR="/data/adb/Malwack"
-CUSTOM_HOSTS_FILE="$CUSTOM_HOSTS_DIR/custom_hosts.txt"
-BLOCKED_APPS_FILE="$CUSTOM_HOSTS_DIR/blocked_apps.txt"
+GREEN='\033[0;32m'
+PINK='\033[1;35m'
+NC='\033[0m'
 
-# === Ensure Directory Exists ===
-mkdir -p "$CUSTOM_HOSTS_DIR"
-
-# === Logging Function ===
-log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
-}
-
-# === Abort on Error ===
-abort() {
-    log "Error: $1"
+usage() {
+    local cmd=$(basename "$0")
+    echo -e "${PINK}Usage: $cmd [on <port>|off|status|enable-on-boot <port>|disable-on-boot]${NC}"
+    echo -e "\nCommands:"
+    echo -e "  $cmd on <port>             - Enable wireless ADB on the specified port."
+    echo -e "  $cmd off                   - Disable wireless ADB."
+    echo -e "  $cmd status                - Show the status of wireless ADB."
+    echo -e "  $cmd enable-on-boot <port> - Enable wireless ADB on boot with the specified port."
+    echo -e "  $cmd disable-on-boot       - Disable wireless ADB on boot."
+    echo -e "  $cmd --import-key <path>   - Import an adbkey.pub file to authorize ADB without prompt."
+    echo -e "  $cmd --backup <path>       - Backup authorized adb_keys "
+    echo -e "  $cmd --restore <path>      -restore backed up adb_keys "
+    echo -e "  $cmd --clear-keys          - Revokes all authorized Keys "
+    echo -e "\nNote: If you don't specify a port, it will use the default port 5555."
     exit 1
 }
 
-# === Get App UID ===
-get_uid() {
-    package="$1"
-    uid="$(pm list packages -U | grep "^package:$package " | sed 's/.*uid:\([0-9]*\).*/\1/' | cut -d',' -f1)"
-    if [ -n "$uid" ]; then
-        echo "$uid"
-        return 0
+check_root() {
+    if [ "$(id -u)" != "0" ]; then
+        echo -e "${PINK}Error: This script must be run as root.${NC}"
+        exit 1
     fi
-    return 1
 }
 
-# === Block App ===
-block_app() {
-    package="$1"
-    [ -z "$package" ] && abort "Please provide a package name to block."
+enable_wireless_adb() {
+    local port=${1:-5555} 
+    echo "$port" | grep -qE '^[0-9]+$'
+    if [ $? -ne 0 ] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+        echo -e "${PINK}Error: Invalid port number.${NC}"
+        exit 1
+    fi
+
+    setprop service.adb.tcp.port "$port"
+    stop adbd
+    start adbd
+    echo -e "${GREEN} => Wireless ADB enabled on port $port.${NC}"
+    show_default_gateway
+    su -lp 2000 -c "cmd notification post -S bigtext -t 'WADBD' 'Tag' 'Wireless ADBD Enabled on port $port !!'" > /dev/null 2>&1
+}
+
+show_default_gateway() {
+    # Get the current ADB TCP port
+    local port=$(getprop service.adb.tcp.port)
     
-    uid=$(get_uid "$package")
-    if [ $? -eq 0 ]; then
-        iptables -I OUTPUT -m owner --uid-owner "$uid" -j REJECT
-        ip6tables -I OUTPUT -m owner --uid-owner "$uid" -j REJECT
-        echo "$package" >> "$BLOCKED_APPS_FILE"
-        log "Blocked internet access for package: $package (UID: $uid)"
-    else
-        abort "Package $package not found"
+    # Check if wireless ADB is enabled or disabled
+    if [ "$port" -eq -1 ]; then
+        echo -e "${PINK} => Wireless ADB is disabled.${NC}"
+        return  # Exit the function early if wireless ADB is disabled
     fi
-}
 
-# === Unblock App ===
-unblock_app() {
-    package="$1"
-    [ -z "$package" ] && abort "Please provide a package name to unblock."
+    # Fetch the local IP addresses (excluding 127.0.0.1)
+    ips=$(ip -f inet addr show | grep -Eo 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}' | grep -v '^127\.0\.0\.1$')
     
-    uid=$(get_uid "$package")
-    if [ $? -eq 0 ]; then
-        iptables -D OUTPUT -m owner --uid-owner "$uid" -j REJECT 2>/dev/null
-        ip6tables -D OUTPUT -m owner --uid-owner "$uid" -j REJECT 2>/dev/null
-        sed -i "\|^$package$|d" "$BLOCKED_APPS_FILE"
-        log "Unblocked internet access for package: $package (UID: $uid)"
+    if [ -n "$ips" ]; then
+        echo -e "${PINK} => The following commands can be used to connect wirelessly:${NC}"
+        for ip in $ips; do
+            echo -e "${GREEN}   • adb connect $ip:$port${NC}"
+        done
     else
-        abort "Package $package not found"
+        echo -e "${PINK} => No usable IP addresses found. Ensure your device is connected to a network.${NC}"
     fi
 }
-
-# === List Blocked Apps ===
-list_blocked_apps() {
-    if [ -f "$BLOCKED_APPS_FILE" ]; then
-        echo "Currently blocked apps:"
-        cat "$BLOCKED_APPS_FILE"
-    else
-        echo "No apps are currently blocked"
-    fi
+disable_wireless_adb() {
+    setprop service.adb.tcp.port -1
+    stop adbd
+    start adbd
+    echo -e "${GREEN} => Wireless ADB disabled.${NC}"
 }
 
-# === Add Custom Hosts ===
-add_hosts() {
-    url="$1"
-    [ -z "$url" ] && abort "Please provide a URL for the hosts file."
-
-    # Check if the URL is already listed in the custom hosts list
-    if grep -Fxq "$url" "$CUSTOM_HOSTS_FILE"; then
-        abort "The URL $url is already added to the custom hosts list."
+check_wireless_adb_status() {
+    # Check current wireless ADB status
+    port=$(getprop service.adb.tcp.port)
+    
+    if [ "$port" != "-1" ] && [ -n "$port" ]; then
+        echo -e "${GREEN} => Wireless ADB is enabled on port $port.${NC}"
+        show_default_gateway 
+    else
+        echo -e "${PINK} => Wireless ADB is disabled.${NC}"
     fi
-
-    # Create a temporary file for the new hosts
-    temp_hosts="$(mktemp)"
-
-    # Attempt to download the hosts file from the URL
-    if curl -s "$url" -o "$temp_hosts"; then
-        # Check if the downloaded hosts content is already in HOSTS_FILE
-        if grep -Fq "# BEGIN HOSTS FROM $url" "$HOSTS_FILE"; then
-            log "Hosts from $url are already included in the hosts file."
-            rm -f "$temp_hosts"
-            return 0
+    
+    # Check if wireless ADB is enabled on boot
+    module_path="/data/adb/modules/wadbd/service.sh"
+    if [ -f "$module_path" ]; then
+        boot_port=$(awk '/setprop service.adb.tcp.port/ {print $3}' "$module_path")
+        if [ -n "$boot_port" ]; then
+            echo -e "${GREEN} => Wireless ADB on boot is enabled on port $boot_port.${NC}"
+        else
+            echo -e "${PINK} => Wireless ADB on boot is not set correctly.${NC}"
         fi
-
-        # Append the new hosts block to HOSTS_FILE
-        echo "# BEGIN HOSTS FROM $url" >> "$HOSTS_FILE"
-        cat "$temp_hosts" >> "$HOSTS_FILE"
-        echo "# END HOSTS FROM $url" >> "$HOSTS_FILE"
-
-        # Log the addition and update permissions
-        echo "$url" >> "$CUSTOM_HOSTS_FILE"
-        log "Added hosts from $url"
-        chmod 644 "$HOSTS_FILE"
-        rm -f "$temp_hosts"
     else
-        # Cleanup and abort on failure
-        rm -f "$temp_hosts"
-        abort "Failed to download hosts from $url"
+        echo -e "${PINK} => Wireless ADB on boot is disabled.${NC}"
     fi
 }
 
-# == Custom URL ==
-custom_url() {
-    url="$1"
-    [ -z "$url" ] && abort "Please provide a URL to block"
+enable_on_boot() {
+    local port=${1:-5555}  # Default to port 5555 if no port is provided
+    # Check if the port is a valid number (between 1 and 65535)
+    echo "$port" | grep -qE '^[0-9]+$'
+    if [ $? -ne 0 ] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+        echo -e "${PINK} => Error: Invalid port number.${NC}"
+        exit 1
+    fi
+
+    local module_path="/data/adb/modules/wadbd"
+    mkdir -p "$module_path"
+    cat >"$module_path/service.sh" <<EOF
+#!/system/bin/sh
+
+setprop service.adb.tcp.port $port
+stop adbd
+start adbd
+
+while [ "\$(getprop sys.boot_completed)" != "1" ]; do
+    sleep 5
+done
+
+su -lp 2000 -c "cmd notification post -S bigtext -t 'WADBD' 'Tag' 'Wireless ADBD Enabled on port $port !!'" > /dev/null 2>&1
+
+exit
+EOF
+    chmod 644 "$module_path/service.sh"
+    echo -e "${GREEN} => Wireless ADB will now be enabled on boot with port $port.${NC}"
+su -lp 2000 -c "cmd notification post -S bigtext -t 'WADBD' 'Tag' 'Wireless ADB on boot will now be Enabled on port $port !!'" > /dev/null 2>&1
+}
+
+disable_on_boot() {
+    local module_path="/data/adb/modules/wadbd"
+    if [ -f "$module_path/service.sh" ]; then
+        rm -f "$module_path/service.sh"
+        echo -e "${GREEN} => Wireless ADB will no longer be enabled on boot.${NC}"
+    else
+        echo -e "${PINK} => Wireless ADB on boot is already disabled.${NC}"
+    fi
+}
+####
+remove_keys(){
+    rm -f /data/misc/adb/adb_keys
+    rm -f /data/misc/adb/adb_temp_keys.xml
+    echo -e "${PINK}ADB keys cleared successfully.${NC}"
+}
+###
+validate_adbkey_pub() {
+    local key_file="$1"
+    if ! head -n 1 "$key_file" | grep -qE '^QAAA'; then
+        echo -e "${PINK}Error: Invalid adbkey format. Expected a valid ADB public key.${NC}"
+        exit 1
+    fi
+    local key_length=$(head -n 1 "$key_file" | base64 -d 2>/dev/null | wc -c)
+    if [ "$key_length" -lt 256 ]; then
+        echo -e "${PINK}Error: Key length is too short to be a genuine adbkey.pub.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}Validation successful.${NC}"
+}
+
+import_adb_key() {
+    local key_file="$1"
+    local adb_keys_file="/data/misc/adb/adb_keys"
+
+    # Check if the key file exists
+    if [ ! -f "$key_file" ]; then
+        echo -e "${PINK}Error: File not found at $key_file.${NC}"
+        exit 1
+    fi
+
+    # Validate the adbkey.pub file
+    validate_adbkey_pub "$key_file"
+    if [ ! -f "$adb_keys_file" ]; then
+        mkdir -p "$(dirname "$adb_keys_file")"
+        touch "$adb_keys_file"
+        chmod 640 "$adb_keys_file"
+        chown 1000:2000 "$adb_keys_file"
+    fi
     
-    # Check if the URL already exists in the hosts file
-    if grep -qE "^[0-9.]+[[:space:]]+$url$" "$HOSTS_FILE"; then
-        echo "Error: $url already exists in the hosts file."
-        return 1
+if grep -qFf "$key_file" "$adb_keys_file"; then
+    echo -e "${PINK}Key is already present in adb_keys.${NC}"
+else
+    cat "$key_file" >>"$adb_keys_file"
+    echo "" >>"$adb_keys_file"  
+    echo -e "${GREEN}Key imported successfully to adb_keys.${NC}"
+fi
+}
+
+SIGNATURE=$(echo "ADB_KEYS_BACKUP" | sha256sum | cut -d' ' -f1)
+
+backup_adb_keys() {
+    local backup_path=$1
+    if [ -z "$backup_path" ]; then
+        echo -e "${PINK}Error: No backup path provided.${NC}"
+        exit 1
     fi
-    
-    # Add the URL to the hosts file
-    echo "0.0.0.0 $url" >> "$HOSTS_FILE"
-    chmod 644 "$HOSTS_FILE"
-    echo "Added $url to the hosts file."
-}
 
-
-
-# === List Custom Hosts Sources ===
-list_hosts() {
-    if [ -f "$CUSTOM_HOSTS_FILE" ]; then
-        echo "Custom hosts sources:"
-        cat "$CUSTOM_HOSTS_FILE"
-    else
-        echo "No custom hosts sources configured"
+if [ ! -f /data/misc/adb/adb_keys ]; then
+        echo -e "${PINK}Error: adb_keys file does not exist.${NC}"
+        exit 1
     fi
-}
 
-# === Remove Custom Hosts ===
-remove_hosts() {
-    url="$1"
-    [ -z "$url" ] && abort "Please provide a URL to remove."
-    
-    if grep -q "^$url$" "$CUSTOM_HOSTS_FILE"; then
-        # Create a temporary file for the modified hosts
-        temp_hosts="$(mktemp)"
-        
-        # Remove the section between markers
-        sed "/# BEGIN HOSTS FROM $url/,/# END HOSTS FROM $url/d" "$HOSTS_FILE" > "$temp_hosts"
-        mv "$temp_hosts" "$HOSTS_FILE"
-        
-        # Remove URL from custom hosts list
-        sed -i "\|^$url$|d" "$CUSTOM_HOSTS_FILE"
-        log "Removed hosts from $url"
-        chmod 644 "$HOSTS_FILE"
-    else
-        abort "URL not found in custom hosts list"
+    if [ -d "$backup_path" ]; then
+        backup_path="$backup_path/keys_backup"
     fi
+    echo -n "$SIGNATURE" > "$backup_path"
+    cat /data/misc/adb/adb_keys >> "$backup_path"
+    echo -e "${GREEN}ADB keys backed up to $backup_path.${NC}"
 }
 
-# ===  Custom Hosts ===
-update_hosts() {
-    if [ -f "$CUSTOM_HOSTS_FILE" ]; then
-        # Remove all custom hosts sections first
-        while read -r url; do
-            remove_hosts "$url"
-        done < "$CUSTOM_HOSTS_FILE"
-        
-        # Re-add all custom hosts
-        while read -r url; do
-            add_hosts "$url"
-        done < "$CUSTOM_HOSTS_FILE"
-        chmod 644 "$HOSTS_FILE"
-        log "Updated all custom hosts"
-    else
-        echo "No custom hosts to update"
+
+restore_adb_keys() {
+    local backup_path=$1
+    if [ -z "$backup_path" ]; then
+        echo -e "${PINK}Error: No backup file provided.${NC}"
+        exit 1
     fi
-}
-
-# ===d Restore Originals ===
-restore_original() {
-    log "Restoring the hosts file to its original state..."
-    chmod 644 "$HOSTS_FILE" || abort "Failed to set permissions on $HOSTS_FILE"
-    [ -f "$HOSTS_FILE" ] && rm -f "$HOSTS_FILE"
-    echo "127.0.0.1 localhost" > "$HOSTS_FILE"
-    echo "::1 localhost" >> "$HOSTS_FILE"
-    chmod 644 "$HOSTS_FILE"
-    # Clear custom hosts list
-    [ -f "$CUSTOM_HOSTS_FILE" ] && rm -f "$CUSTOM_HOSTS_FILE"
-    log "Hosts file restored to its original state."
-}
-
-block_porn() {
-    log "Blocking pornographic websites..."
-    HOST_URL="https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/porn-only/hosts"
-
-    if curl -s "$HOST_URL" -o "$TEMP_FILE"; then
-        cat "$TEMP_FILE" >> "$HOSTS_FILE"
-        echo -e "$HOST_URL" >> "$URLS_FILE"
-        chmod 644 "$HOSTS_FILE"
-        log "Pornographic sites have been blocked in the hosts file."
-        rm -f "$TEMP_FILE"
-    else
-        abort "Failed to download blocking hosts file from $HOST_URL."
+    if [ ! -f "$backup_path" ]; then
+        echo -e "${PINK}Error: Backup file not found at $backup_path.${NC}"
+        exit 1
     fi
-}
-
-#== whitelist ==
-
-whitelist_domain() {
-    DOMAIN="$1"
-    [ -z "$DOMAIN" ] && abort "Please provide a domain to whitelist."
-
-    if grep -q "0\.0\.0\.0 $DOMAIN" "$HOSTS_FILE"; then
-        sed "/0\.0\.0\.0 $DOMAIN/d" "$HOSTS_FILE" > "$TEMP_FILE"
-        mv "$TEMP_FILE" "$HOSTS_FILE"
-        chmod 644 "$HOSTS_FILE"
-        log "Domain $DOMAIN has been whitelisted."
-    else
-        log "Domain $DOMAIN was not found in the hosts file."
+    local file_signature=$(head -c 64 "$backup_path")
+    if [ "$file_signature" != "$SIGNATURE" ]; then
+        echo -e "${PINK}Error: Invalid signature. Restoration aborted.${NC}"
+        exit 1
     fi
+    tail -c +65 "$backup_path" > /data/misc/adb/adb_keys
+    chmod 640 /data/misc/adb/adb_keys
+    chown 1000:2000 /data/misc/adb/adb_keys
+    echo -e "${GREEN}ADB keys restored successfully from $backup_path.${NC}"
 }
-
-# == restore default == 
-
-restore_default() {
-    log "Restoring the hosts file to its default state with updates..."
-    HOST_URL="https://raw.githubusercontent.com/Magisk-Modules-Alt-Repo/Malwack/main/system/etc/hosts"
-    HOST_ONLINE_URL="https://raw.githubusercontent.com/Magisk-Modules-Alt-Repo/Malwack/refs/heads/main/urls.txt"
-    TIMEOUT=60
-
-    chmod 644 "$HOSTS_FILE"
-    if timeout "$TIMEOUT" curl -s "$HOST_URL" -o "$TEMP_FILE"; then
-        [ -f "$HOSTS_FILE" ] && rm -f "$HOSTS_FILE"
-        cp "$TEMP_FILE" "$HOSTS_FILE"
-        chmod 644 "$HOSTS_FILE"
-        echo "$HOST_ONLINE_URL" > "$URLS_FILE"
-        log "Hosts file restored to the default state and updated successfully."
-        rm -f "$TEMP_FILE"
-    else
-        abort "Failed to download the default hosts file from $HOST_URL."
-    fi
-}
-
-
-
-
-# ===  Help Menu ===
-
-show_help() {
-    echo "Usage: malwack [OPTIONS]"
-    echo "Options:"
-    echo "  --restore-original    : Restore the hosts file to its original state (No blocking)"
-    echo "  --restore-default     : Restore the hosts file to the module's default state & update it"
-    echo "  --blockporn           : Block pornographic websites"
-    echo "  --whitelist <domain>  : Remove the specified domain from the hosts file"
-    echo "  --add-hosts <url>     : Add custom hosts from specified URL"
-    echo "  --list-hosts          : List all custom hosts sources"
-    echo "  --remove-hosts <url>  : Remove hosts from specified URL"
-    echo "  --update-hosts        : Update all custom hosts"
-    echo "  --block-url <url>     : Block a custom url."
-    echo "  --block-app <pkg>     : Block internet access for specified package"
-    echo "  --unblock-app <pkg>   : Unblock internet access for specified package"
-    echo "  --list-app            : List all blocked apps"
-    echo "  --help                : Display this help message"
-}
-
-
-# == Usage==
-
+check_root
+if [ "$#" -lt 1 ]; then
+    usage
+fi
 
 case "$1" in
-    --restore-original)
-        restore_original
+ --import-key)
+        if [ -z "$2" ]; then
+            echo -e "${PINK}Error: Path to adbkey.pub is required.${NC}"
+            usage
+        fi
+        import_adb_key "$2"
         ;;
-    --blockporn)
-        block_porn
+    on)
+        enable_wireless_adb "$2"  # If no port is provided, default to 5555
         ;;
-    --whitelist)
-        whitelist_domain "$2"
+    off)
+        disable_wireless_adb
         ;;
-    --restore-default)
-        restore_default
+    status)
+        check_wireless_adb_status
         ;;
-    --add-hosts)
-        add_hosts "$2"
+    enable-on-boot)
+        enable_on_boot "$2" 
         ;;
-    --list-hosts)
-        list_hosts
+    disable-on-boot)
+        disable_on_boot
         ;;
-    --remove-hosts)
-        remove_hosts "$2"
+        --clear-keys)
+        remove_keys
         ;;
-    --update-hosts)
-        update_hosts
+        --backup)
+        backup_adb_keys "$2"
         ;;
-    --block-app)
-        block_app "$2"
-        ;;
-    --unblock-app)
-        unblock_app "$2"
-        ;;
-    --list-app)
-        list_blocked_apps
-        ;;
-    --block-url)
-        custom_url "$2"
-        ;;
-    --help)
-        show_help
+    --restore)
+        restore_adb_keys "$2"
         ;;
     *)
-        echo "Invalid option. Use 'malwack --help' for usage information."
+        usage
         ;;
 esac
