@@ -10,7 +10,7 @@ elif [ "$KSU" ]; then
 elif [ "$MAGISK_VER_CODE" ]; then
     ui_print "- Magisk: $MAGISK_VER │ $MAGISK_VER_CODE"
 else
-    ui_print " ! Recovery is not supported."
+    ui_print "- ! Recovery is not supported."
     abort
 fi
 if [ "$bin_dir" ] && [ -d "$bin_dir" ]; then
@@ -18,7 +18,7 @@ if [ "$bin_dir" ] && [ -d "$bin_dir" ]; then
     chmod 755 "$bin_dir/wadbd"
     touch "$MODPATH/skip_mount"
 fi
-ui_print "[*] Checking USB debugging status..."
+ui_print "- Checking USB debugging status..."
 if getprop persist.sys.usb.config | grep -q "adb"; then
     ui_print "- USB debugging is enabled."
 else
