@@ -3,10 +3,15 @@ if [ "$APATCH" ]; then
     ui_print "- APatch: $APATCH_VER │ $APATCH_VER_CODE"
     bin_dir="/data/adb/ap/bin"
     rm -f "$MODPATH/action.sh"
+    sed -i 's/wadbd/\/data\/adb\/ap\/bin\/wadbd/g' "$MODPATH/webroot/index.html"
+    [ -f /data/adb/ap/bin/wadbd ] && rm -f /data/adb/ap/bin/wadbd
+    
 elif [ "$KSU" ]; then
     ui_print "- KSU: $KSU_KERNEL_VER_CODE │ $KSU_VER_CODE"
     bin_dir="/data/adb/ksu/bin"
     rm -f "$MODPATH/action.sh"
+    sed -i 's/wadbd/\/data\/adb\/ksu\/bin\/wadbd/g' "$MODPATH/webroot/index.html"
+    [ -f /data/adb/ap/bin/wadbd ] && rm -f /data/adb/ap/bin/wadbd
 elif [ "$MAGISK_VER_CODE" ]; then
     ui_print "- Magisk: $MAGISK_VER │ $MAGISK_VER_CODE"
 else
