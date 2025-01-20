@@ -1,4 +1,4 @@
-ui_print "[*] Checking installation environment..."
+ui_print "- Checking installation environment..."
 if [ "$APATCH" ]; then
     ui_print "- APatch: $APATCH_VER │ $APATCH_VER_CODE"
     bin_dir="/data/adb/ap/bin"
