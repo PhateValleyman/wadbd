@@ -21,6 +21,7 @@ fi
 if [ "$bin_dir" ] && [ -d "$bin_dir" ]; then
     cp "$MODPATH/system/bin/wadbd" "$bin_dir/wadbd"
     chmod 755 "$bin_dir/wadbd"
+    #SkipMountForKSU/Apatch
     touch "$MODPATH/skip_mount"
 fi
 ui_print "- Checking USB debugging status..."
