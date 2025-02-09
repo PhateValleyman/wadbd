@@ -1,435 +1,85 @@
 <!DOCTYPE html>
+<!-- This file is part of WADBD
+https://github.com/rhythmcache 
+https://rhythmcache.t.me 
+-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Wireless ADB Manager</title>
-    <style>
-        :root {
-            /* Dark theme (default) */
-            --bg-primary: #121212;
-            --bg-secondary: #1e1e2f;
-            --bg-tertiary: #2e2e3e;
-            --text-primary: #ffffff;
-            --accent-color: #4caf50;
-            --button-color: #4caf50;
-            --button-hover: #45a049;
-        }
-        
-        [data-theme="amoled"] {
-    --bg-primary: #000000;           
-    --bg-secondary: #121212;          
-    --bg-tertiary: #1c1c1c;           
-    --text-primary: #ffffff;         
-    --accent-color: #3cb371;         
-    --button-color: #2e8b57;         
-    --button-hover: #228b22;          
-}
-
-        [data-theme="light"] {
-            --bg-primary: #f5f5f5;
-            --bg-secondary: #ffffff;
-            --bg-tertiary: #f0f0f0;
-            --text-primary: #333333;
-            --accent-color: #4caf50;
-            --button-color: #4caf50;
-            --button-hover: #45a049;
-        }
-
-        [data-theme="pink"] {
-            --bg-primary: #fce4ec;
-            --bg-secondary: #ffffff;
-            --bg-tertiary: #f8bbd0;
-            --text-primary: #880e4f;
-            --accent-color: #ec407a;
-            --button-color: #ec407a;
-            --button-hover: #d81b60;
-        }
-        
-        [data-theme="blackpink"] {
-    --bg-primary: #000000;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #242424;
-    --text-primary: #ff9ecd;
-    --accent-color: #ff69b4;
-    --button-color: #ff1493;
-    --button-hover: #ff007f;
-}
-        
-        [data-theme="dpink"] {
-    --bg-primary: #1a121a;
-    --bg-secondary: #2d1f2d;
-    --bg-tertiary: #3d2b3d;
-    --text-primary: #ffd9ec;
-    --accent-color: #ff80ab;
-    --button-color: #ff4081;
-    --button-hover: #f50057;
-}
-
-[data-theme="space"] {
-    --bg-primary: #0B0B1A;
-    --bg-secondary: #1A1A2E;
-    --bg-tertiary: #202040;
-    --text-primary: #E8E8E8;
-    --accent-color: #7B68EE;
-    --button-color: #6A5ACD;
-    --button-hover: #483D8B;
-}
-
-
-[data-theme="forest"] {
-    --bg-primary: #1b2819;
-    --bg-secondary: #2a3c26;
-    --bg-tertiary: #3b4f35;
-    --text-primary: #e8f5e4;
-    --accent-color: #90be6d;
-    --button-color: #6b9c3d;
-    --button-hover: #557b31;
-}
-
- [data-theme="ocean"] {
-    --bg-primary: #0a192f;
-    --bg-secondary: #172a45;
-    --bg-tertiary: #243b55;
-    --text-primary: #e6f1ff;
-    --accent-color: #64ffda;
-    --button-color: #00b4d8;
-    --button-hover: #0096c7;
-}
-
-
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            width: 100%;
-            overflow-y: auto;
-            transition: background-color 0.3s ease;
-        }
-
-        header {
-            width: 100%;
-            padding: 20px;
-            background-color: var(--bg-secondary);
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 22px;
-            color: var(--accent-color);
-            user-select: none;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            right: 35px;
-            background-color: var(--button-color);
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 10px;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 500px;
-            margin: 20px auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            flex: 1;
-            padding-bottom: 80px;
-        }
-
-        .card {
-            background-color: var(--bg-secondary);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transform: translateZ(0);
-            transition: background-color 0.3s ease;
-        }
-
-        .card h2 {
-            font-size: 18px;
-            color: var(--accent-color);
-            margin-bottom: 15px;
-            user-select: none;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 5px;
-            user-select: none;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: var(--bg-tertiary);
-            color: var(--text-primary);
-            box-sizing: border-box;
-        }
-
-        .button-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        button {
-            background-color: var(--button-color);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 5px;
-            flex: 1 1 45%;
-            touch-action: manipulation;
-            user-select: none;
-            transition: background-color 0.3s ease;
-        }
-
-        button:active {
-            background-color: var(--button-hover);
-            transform: translateY(1px);
-        }
-
-        .output {
-            background-color: var(--bg-tertiary);
-            color: var(--text-primary);
-            padding: 15px;
-            border-radius: 5px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            overflow: auto;
-            height: 150px;
-        }
-
-        footer {
-            width: 100%;
-            background-color: var(--bg-secondary);
-            padding: 20px 0;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
-            position: fixed;
-            bottom: 0;
-            z-index: 100;
-        }
-
-        footer img {
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .info-section {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: var(--bg-tertiary);
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            color: var(--text-primary);
-            transform: translateZ(0);
-        }
-
-        .info-section h3 {
-            margin: 0 0 10px 0;
-            font-size: 16px;
-            color: var(--accent-color);
-            user-select: none;
-        }
-
-        .info-section p {
-            margin: 5px 0;
-            font-size: 14px;
-        }
-        
-        
-
-    </style>
+    <title>ADB Manager</title>
+    <link rel="stylesheet" type="text/css" href="https://mui.kernelsu.org/mmrl/insets.css">
+    <link rel="stylesheet" type="text/css" href="https://mui.kernelsu.org/mmrl/colors.css">
+    <link rel="stylesheet" href="assets/index.min.css">
 </head>
 <body>
-    <header>
-        <h1>Wireless ADB Manager</h1>
-        <button class="theme-toggle" onclick="toggleTheme()">Theme</button>
-    </header>
-    <main class="container">
-        <div class="card">
-            <h2>Set Port</h2>
-            <div class="input-group">
-                <label for="port">Enter Wireless ADB Port (default: 5555)</label>
-                <input type="number" id="port" placeholder="5555" min="1" max="65535">
+    <div class="mmrl-safe-area">
+        <div class="header">
+            <h1>ADB Manager</h1>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="theme-text">Theme</span>
+            </button>
+        </div>
+        <div id="ksuDialog" class="dialog-overlay" style="display: none;">
+            <div class="dialog-content">
+                <h3>MMRL Detected</h3>
+                <p>This module requires KernelSU Advanced API access to function.</p>
+            </div>
+        </div>
+        <div class="container">
+            <div class="card">
+                <h2>ADB Settings</h2>
+                <div class="settings-container">
+                    <div class="setting-item">
+                        <span>USB Debugging</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="usbDebugToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <span>Wireless ADB</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="wirelessToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="port-control">
+                        <input type="number" id="portInput" class="port-input" placeholder="Port (default: 5555)" value="5555">
+                        <button id="changePortBtn" class="action-button">Change Port</button>
+                    </div>
+                    <div class="setting-item">
+                        <span>Enable on Boot</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="bootToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Status</h2>
+                <div class="status" id="statusOutput"></div>
+            </div>
+            
+            <div class="card">
+                <h2>Connection Guide</h2>
+                <div class="connection-info" id="connectionInfo"></div>
+            </div>
+
+            <div class="card">
+                <h2>Device Information</h2>
+                <div class="device-info" id="deviceInfo"></div>
             </div>
         </div>
 
-        <div class="card">
-            <h2>Actions</h2>
-            <div class="button-container">
-                <button onclick="executeCommand('on')">Enable Wireless ADB</button>
-                <button onclick="executeCommand('off')">Disable Wireless ADB</button>
-                <button onclick="executeCommand('status')">Show Wireless ADB Status</button>
-                <button onclick="executeCommand('enable-on-boot')">Enable Wireless ADB on Boot</button>
-                <button onclick="executeCommand('disable-on-boot')">Disable Wireless ADB on Boot</button>
-            </div>
-        </div>
+        <footer class="footer">
+            <img src="assets/github.png" alt="GitHub" onclick="openLink('https://github.com/rhythmcache')">
+            <img src="assets/telegram.png" alt="Telegram" onclick="openLink('https://t.me/ximistuffschat')">
+        </footer>
+    </div>
 
-        <div class="card">
-            <h2>Output</h2>
-            <div class="output" id="output">Output will be displayed here...</div>
-        </div>
-
-        <div class="info-section" id="device-info">
-            <h3>Device Information</h3>
-            <p id="device-codename">Device Codename: Loading...</p>
-            <p id="device-name">Device Name: Loading...</p>
-            <p id="android-version">Android Version: Loading...</p>
-            <p id="build-number">Build Number: Loading...</p>
-            <p id="kernel-version">Kernel Version: Loading...</p>
-            <p id="usb-debugging">USB Debugging: Loading...</p>
-        </div>
-    </main>
-    <footer>
-        <img src="github.png" alt="GitHub" onclick="openLink('https://github.com/rhythmcache')">
-        <img src="telegram.png" alt="Telegram" onclick="openLink('https://ximistuffschat.t.me')">
-    </footer>
-
-    <script>
-        let callbackCounter = 0;
-        const themes = [
-    'dark', 
-    'amoled',
-    'light', 
-    'pink', 
-    'blackpink',
-    'dpink',
-    'space',
-    'forest',
-    'ocean',
-];
-        let currentThemeIndex = localStorage.getItem('themeIndex') ? parseInt(localStorage.getItem('themeIndex')) : 0;
-
-        function setTheme(index) {
-            const theme = themes[index];
-            document.body.setAttribute('data-theme', theme === 'dark' ? '' : theme);
-            localStorage.setItem('themeIndex', index);
-        }
-
-        function toggleTheme() {
-            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-            setTheme(currentThemeIndex);
-        }
-        setTheme(currentThemeIndex);
-
-        function getUniqueCallbackName(base) {
-            return `${base}_callback_${Date.now()}_${callbackCounter++}`;
-        }
-
-        function stripAnsiCodes(text) {
-            return text.replace(
-                /[\u001b\u009b][[()\]#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-                ''
-            );
-        }
-
-        async function exec(command, options = {}) {
-            return new Promise((resolve, reject) => {
-                const callbackName = getUniqueCallbackName('exec');
-                window[callbackName] = (errno, stdout, stderr) => {
-                    resolve({ errno, stdout, stderr });
-                    delete window[callbackName];
-                };
-
-                try {
-                    ksu.exec(command, JSON.stringify(options), callbackName);
-                } catch (error) {
-                    reject(error);
-                    delete window[callbackName];
-                }
-            });
-        }
-
-        async function executeCommand(action) {
-            const outputDiv = document.getElementById('output');
-            const port = document.getElementById('port').value || '5555';
-            outputDiv.textContent = 'Executing... Please wait.';
-
-            try {
-                let command = '';
-                if (action === 'on') {
-                    command = `wadbd on ${port}`;
-                } else if (action === 'enable-on-boot') {
-                    command = `wadbd enable-on-boot ${port}`;
-                } else if (action === 'off') {
-                    command = 'wadbd off';
-                } else if (action === 'disable-on-boot') {
-                    command = 'wadbd disable-on-boot';
-                } else if (action === 'status') {
-                    command = 'wadbd status';
-                }
-
-                const { stdout, stderr } = await exec(command);
-                outputDiv.textContent = stripAnsiCodes(stdout || stderr || 'No output.');
-            } catch (error) {
-                outputDiv.textContent = 'Error: Could not execute the command.';
-            }
-        }
-
-        function openLink(url) {
-            exec(`am start -a android.intent.action.VIEW -d "${url}"`);
-        }
-
-        async function fetchDeviceInfo() {
-            try {
-                const { stdout: deviceCodename } = await exec('getprop ro.product.device');
-                const { stdout: deviceName } = await exec('getprop ro.product.model');
-                const { stdout: androidVersion } = await exec('getprop ro.build.version.release');
-                const { stdout: buildNumber } = await exec('getprop ro.build.display.id');
-                const { stdout: kernelVersion } = await exec('uname -r');
-                const { stdout: usbDebugging } = await exec('settings get global adb_enabled');
-
-                document.getElementById('device-codename').textContent = `Device Codename: ${deviceCodename.trim()}`;
-                document.getElementById('device-name').textContent = `Device Name: ${deviceName.trim()}`;
-                document.getElementById('android-version').textContent = `Android Version: ${androidVersion.trim()}`;
-                document.getElementById('build-number').textContent = `Build Number: ${buildNumber.trim()}`;
-                document.getElementById('kernel-version').textContent = `Kernel Version: ${kernelVersion.trim()}`;
-                document.getElementById('usb-debugging').textContent = `USB Debugging: ${usbDebugging.trim() === '1' ? 'Enabled' : 'Disabled'}`;
-            } catch (error) {
-                console.error('Failed to fetch device info:', error);
-            }
-        }
-
-        window.onload = fetchDeviceInfo;
-    </script>
+    <script src="assets/index.min.js"></script>
 </body>
 </html>
