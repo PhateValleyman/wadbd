@@ -40,8 +40,8 @@ wadbd --clear-keys            - Revokes all authorized Keys
 ## WebUI Screenshot
 
 <div style="display: flex; justify-content: center; align-items: center;">
-  <img src="https://github.com/rhythmcache/wireless-adb-controller/raw/main/Screenshot_20241224-232657.png" alt="WebUI Screenshot" width="45%">
-  <img src="https://github.com/rhythmcache/wireless-adb-controller/raw/main/Screenshot_2024_KernelSU.png" alt="KernelSU Screenshot" width="45%">
+  <img src="https://github.com/rhythmcache/wireless-adb-controller/raw/main/e1.png" alt="WebUI Screenshot" width="45%">
+  <img src="https://github.com/rhythmcache/wireless-adb-controller/raw/main/e2.png" alt="KernelSU Screenshot" width="45%">
 </div>
 
 
