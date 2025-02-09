@@ -1,9 +1,7 @@
 ###########################################
-## This file is a part of WirelessADBD-Controller
+## This file is a part of WADBD
 # by @duds9
 ###########################################
-
-
 if pm list packages | grep -q "io.github.a13e300.ksuwebui"; then
     echo "- Launching WebUI in KSUWebUIStandalone..."
     am start -n "io.github.a13e300.ksuwebui/.WebUIActivity" -e id "wadbd"
