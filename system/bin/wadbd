@@ -1,5 +1,8 @@
 #!/bin/sh
-# wadbd by @rhythmcache
+
+# This file is part of WADBD
+# https://github.com/rhythmcache
+# https://rhythmcache.t.me
 
 GREEN='\033[0;32m'
 PINK='\033[1;35m'
@@ -112,17 +115,13 @@ enable_on_boot() {
     mkdir -p "$module_path"
     cat >"$module_path/service.sh" <<EOF
 #!/system/bin/sh
-
+while [ "\$(getprop sys.boot_completed)" != "1" ]; do
+    sleep 2
+done
 setprop service.adb.tcp.port $port
 stop adbd
 start adbd
-
-while [ "\$(getprop sys.boot_completed)" != "1" ]; do
-    sleep 5
-done
-
 su -lp 2000 -c "cmd notification post -S bigtext -t 'WADBD' 'Tag' 'Wireless ADBD Enabled on port $port !!'" > /dev/null 2>&1
-
 exit
 EOF
     chmod 644 "$module_path/service.sh"
@@ -139,13 +138,13 @@ disable_on_boot() {
         echo -e "${PINK} => Wireless ADB on boot is already disabled.${NC}"
     fi
 }
-####
+
 remove_keys(){
     rm -f /data/misc/adb/adb_keys
     rm -f /data/misc/adb/adb_temp_keys.xml
     echo -e "${PINK}ADB keys cleared successfully.${NC}"
 }
-###
+
 validate_adbkey_pub() {
     local key_file="$1"
     if ! head -n 1 "$key_file" | grep -qE '^QAAA'; then
@@ -210,7 +209,6 @@ if [ ! -f /data/misc/adb/adb_keys ]; then
     echo -e "${GREEN}ADB keys backed up to $backup_path.${NC}"
 }
 
-
 restore_adb_keys() {
     local backup_path=$1
     if [ -z "$backup_path" ]; then
@@ -231,6 +229,7 @@ restore_adb_keys() {
     chown 1000:2000 /data/misc/adb/adb_keys
     echo -e "${GREEN}ADB keys restored successfully from $backup_path.${NC}"
 }
+
 check_root
 if [ "$#" -lt 1 ]; then
     usage
