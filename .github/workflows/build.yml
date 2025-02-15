@@ -1,0 +1,29 @@
+name: build
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  zip-and-update:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Update module.prop version
+      run: |
+        release_tag=`${(echo "}$`{{ github.event.release.tag_name }}" | sed 's/[^0-9]*//g')
+        sed -i "s/^version=.*/version=($release_tag)/" module.prop
+
+    - name: Zip all files
+      run: zip -r release.zip .
+
+    - name: Upload zip as release asset
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./release.zip
+        asset_name: release.zip
+        asset_content_type: application/zip
