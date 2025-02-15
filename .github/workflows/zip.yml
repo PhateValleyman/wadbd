@@ -1,4 +1,4 @@
-name: zip files
+name: zip
 
 on:
   push:
@@ -21,12 +21,11 @@ jobs:
           sed -i "/^updateJson=/d" module.prop
           sed -i "s/^version=.*/version=${COMMIT_HASH}/" module.prop
 
-      - name: create ZIP
+      - name: ceate ZIP
         run: |
-          zip -r wadbd-${COMMIT_HASH}.zip . \
-            --exclude changelog.md README.md updateJson .git .github .gitignore
+          zip -r wadbd-${COMMIT_HASH}.zip * -x changelog.md README.md updateJson .git .github .gitignore
 
-      - name: Upload
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: wadbd-${{ env.COMMIT_HASH }}
