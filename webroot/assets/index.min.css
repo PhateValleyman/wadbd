@@ -148,6 +148,30 @@
     transition: all 0.3s ease;
 }
 
+#unsupportedDialog .dialog-content {
+    background-color: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    max-width: 90%;
+    text-align: center;
+    width: auto;
+    margin: 0 1rem;
+}
+
+#unsupportedDialog .dialog-content h3 {
+    color: var(--error-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+#unsupportedDialog .dialog-content p {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
 .settings-button:hover {
     opacity: 0.9;
     transform: translateY(-52%);
