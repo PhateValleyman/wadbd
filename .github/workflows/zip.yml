@@ -10,28 +10,25 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
         
       - name: Get commit hash
         run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         
-      - name: update module.prop
+      - name: Update module.prop
         run: |
           sed -i '/^updateJson=/d' module.prop
           sed -i "s/^version=.*/version=gh-actions-${COMMIT_HASH}/" module.prop
           
-      - name: upload Files (Excluding Unwanted Files)
+      - name: Remove Unnecessary Files
+        run: |
+          rm -rf .github LICENSE README.md changelog.md updateJson
+          
+      - name: Upload Magisk Module Files
         uses: actions/upload-artifact@v4
         with:
           name: wadbd-${{ env.COMMIT_HASH }}
-          path: |
-            .
-          retention-days: 7
+          path: .
           if-no-files-found: error
-          exclude: |
-            .github
-            LICENSE
-            README.md
-            changelog.md
-            updateJson
+          retention-days: 90
