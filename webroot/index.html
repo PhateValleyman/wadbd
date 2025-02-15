@@ -11,23 +11,31 @@ https://rhythmcache.t.me
     <link rel="stylesheet" type="text/css" href="https://mui.kernelsu.org/mmrl/insets.css">
     <link rel="stylesheet" type="text/css" href="https://mui.kernelsu.org/mmrl/colors.css">
     <link rel="stylesheet" href="assets/index.min.css">
-     </head>
-        <body>
-         <div class="mmrl-safe-area">
-          <div class="header">
-        <button class="info-button" onclick="toggleInfoDialog()">?</button>
-        <h1>ADB Manager</h1>
-        <button class="theme-toggle" onclick="toggleTheme()">
-    	<span class="theme-text">Theme</span>
-         </button>
-         </div>
+</head>
+<body>
+    <div class="mmrl-safe-area">
+        <div class="header">
+            <button class="settings-button" onclick="toggleSettingsMenu()">☰</button>
+            <h1>ADB Manager</h1>
+        </div>
+        <div id="settingsMenu" class="settings-menu" style="display: none;">
+            <button onclick="toggleTheme()">Change Theme</button>
+            <div class="setting-item">
+                <span>Notifications</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="notificationToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <button onclick="toggleInfoDialog()">About</button>
+        </div>
         <div id="infoDialog" class="dialog-overlay" style="display: none;">
-        <div class="dialog-content">
-        <h3>Wireless ADB Controller</h3>
-        <p>A simple Magisk module to control wireless ADB daemon. It allows you to start wireless ADBD in the current session, start automatically on boot, set custom ports, and manage ADB keys (backup/restore/import). It supports KernelSU WebUI as well.</p>
-        <div id="readmeContent" class="readme-content"></div>
-        <button class="close-button" onclick="toggleInfoDialog()">Close</button>
-         </div>
+            <div class="dialog-content">
+                <h3>Wireless ADB Controller</h3>
+                <p>A simple Magisk module to control wireless ADB daemon. It allows you to start wireless ADBD in the current session, start automatically on boot, set custom ports, and manage ADB keys (backup/restore/import). It supports KernelSU WebUI as well.</p>
+                <div id="readmeContent" class="readme-content"></div>
+                <button class="close-button" onclick="toggleInfoDialog()">Close</button>
+            </div>
         </div>
         <div id="ksuDialog" class="dialog-overlay" style="display: none;">
             <div class="dialog-content">
@@ -35,26 +43,10 @@ https://rhythmcache.t.me
                 <p>This module requires KernelSU Advanced API access to function.</p>
             </div>
         </div>
-        <div id="settingsDialog" class="dialog-overlay" style="display: none;">
-            <div class="dialog-content settings-dialog">
-                <h3>Settings</h3>
-                <div class="setting-item">
-                    <span>Notifications</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="notificationToggle">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-                <button class="close-button" onclick="toggleSettingsDialog()">Close</button>
-            </div>
-        </div>
         <div class="container">
             <div class="card">
                 <div class="card-header">
                     <h2>ADB Settings</h2>
-                    <button class="settings-icon" onclick="toggleSettingsDialog()">
-                        <img src="assets/gear.png" alt="Settings" width="30" height="30">
-                    </button>
                 </div>
                 <div class="settings-container">
                     <div class="setting-item">
@@ -84,29 +76,24 @@ https://rhythmcache.t.me
                     </div>
                 </div>
             </div>
-
             <div class="card">
                 <h2>Status</h2>
                 <div class="status" id="statusOutput"></div>
             </div>
-            
             <div class="card">
                 <h2>Connection Guide</h2>
                 <div class="connection-info" id="connectionInfo"></div>
             </div>
-
             <div class="card">
                 <h2>Device Information</h2>
                 <div class="device-info" id="deviceInfo"></div>
             </div>
         </div>
-
         <footer class="footer">
             <img src="assets/github.png" alt="GitHub" onclick="openLink('https://github.com/rhythmcache')">
             <img src="assets/telegram.png" alt="Telegram" onclick="openLink('https://t.me/ximistuffschat')">
         </footer>
     </div>
-
     <script src="assets/index.min.js"></script>
 </body>
 </html>
