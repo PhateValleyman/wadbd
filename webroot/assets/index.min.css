@@ -111,6 +111,27 @@
     flex-direction: column;
 }
 
+.text-button {
+    background-color: var(--accent-color);
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem; 
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    width: auto;
+    display: inline-block;
+    margin-top: 0.5rem;
+    text-align: center; 
+}
+
+.text-button:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+
 .settings-button {
     position: absolute;
     right: 1rem;
