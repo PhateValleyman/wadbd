@@ -1,4 +1,4 @@
-#### What is ADB?
+### What is ADB?
 ADB, or **Android Debug Bridge**, is a versatile command-line tool that allows developers and advanced users to communicate with an Android device. It can be used to 
 
 - **Mirroring the screen**: Display your Android device's screen on your computer.
@@ -9,7 +9,7 @@ ADB, or **Android Debug Bridge**, is a versatile command-line tool that allows d
 - **others**
 ---
 
-#### How Does ADB Work?
+### How Does ADB Work?
 ADB works by establishing a connection between your computer and the Android device. Here’s how it functions in both USB and wireless modes:
 
 1. **USB Mode**:
