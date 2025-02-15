@@ -10,28 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Get Commit Hash
+        run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: modify module.prop
         run: |
-          RELEASE_VERSION=${{ github.event.release.tag_name }}
           sed -i "/^updateJson=/d" module.prop
-          sed -i "s/^version=.*/version=${RELEASE_VERSION}/" module.prop
+          sed -i "s/^version=.*/version=${COMMIT_HASH}/" module.prop
 
-      - name: Create ZIP
+      - name: create ZIP
         run: |
-          zip -r wadbd-${{ github.event.release.tag_name }}.zip . \
+          zip -r wadbd-${COMMIT_HASH}.zip . \
             --exclude changelog.md README.md updateJson .git .github .gitignore
 
-      - name: upload
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: wadbd-${{ github.event.release.tag_name }}
-          path: wadbd-${{ github.event.release.tag_name }}.zip
-
-      - name: Attach ZIP to Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: wadbd-${{ github.event.release.tag_name }}.zip
-          
+          name: wadbd-${{ env.COMMIT_HASH }}
+          path: wadbd-${{ env.COMMIT_HASH }}.zip
