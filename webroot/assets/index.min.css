@@ -128,8 +128,10 @@
     background-color: var(--bg-secondary);
     padding: 1.5rem;
     border-radius: 12px;
-    max-width: 80%;
+    max-width: 90%;
     text-align: center;
+    width: 100%;
+    margin: 0 1rem;
 }
 
 .dialog-content h3 {
@@ -236,6 +238,88 @@ body {
     min-height: 3rem;
 }
 
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.card-header h2 {
+    margin: 0;
+}
+
+.settings-icon {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.settings-icon:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.settings-dialog {
+    min-width: 300px;
+}
+
+.readme-content {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: var(--bg-tertiary);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.readme-content h1, .readme-content h2, .readme-content h3 {
+    color: var(--accent-color);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.readme-content code {
+    background-color: var(--bg-secondary);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.readme-content pre {
+    background-color: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+
+.close-button {
+    margin-top: 1rem;
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    width: 100%;
+    transition: opacity 0.3s ease;
+}
+
+.close-button:hover {
+    opacity: 0.9;
+}
+
 .port-control {
     display: grid;
     grid-template-columns: 1.5fr 1fr;
@@ -283,6 +367,28 @@ body {
     align-items: center;
     justify-content: center;
 }
+
+.info-button {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.info-button:hover {
+    opacity: 0.9;
+    transform: translateY(-52%);
+}
+
 
 .action-button:hover {
     opacity: 0.9;
@@ -516,6 +622,10 @@ input:disabled + .toggle-slider {
     .container {
         padding: 0.5rem;
     }
+    
+    .dialog-content {
+    	max-width: 95%;
+        padding: 1rem;
     
     .card {
         padding: 1rem;
