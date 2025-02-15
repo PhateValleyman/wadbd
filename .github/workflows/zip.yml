@@ -1,4 +1,4 @@
-name: zip
+name: wadbd-actions
 
 on:
   push:
@@ -6,27 +6,32 @@ on:
       - main
 
 jobs:
-  zip-repo:
+  build:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repository
+      - name: checkout repo
         uses: actions/checkout@v4
-
-      - name: Get Commit Hash
+        
+      - name: Get commit hash
         run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
-      - name: modify module.prop
+        
+      - name: update module.prop
         run: |
-          sed -i "/^updateJson=/d" module.prop
-          sed -i "s/^version=.*/version=${COMMIT_HASH}/" module.prop
-
-      - name: ceate ZIP
-        run: |
-          zip -r wadbd-${COMMIT_HASH}.zip * -x changelog.md README.md updateJson .git .github .gitignore
-
-      - name: Upload artifact
+          sed -i '/^updateJson=/d' module.prop
+          sed -i "s/^version=.*/version=gh-actions-${COMMIT_HASH}/" module.prop
+          
+      - name: upload Files (Excluding Unwanted Files)
         uses: actions/upload-artifact@v4
         with:
           name: wadbd-${{ env.COMMIT_HASH }}
-          path: wadbd-${{ env.COMMIT_HASH }}.zip
+          path: |
+            .
+          retention-days: 7
+          if-no-files-found: error
+          exclude: |
+            .github
+            LICENSE
+            README.md
+            changelog.md
+            updateJson
