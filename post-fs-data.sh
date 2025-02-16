@@ -20,5 +20,6 @@ done
 for path in /data/adb/ksu/bin /data/adb/ap/bin; do
     if [ -d "$path" ] && [ ! -f "$path/wadbd" ] && [ -f "$DIR/system/bin/wadbd" ]; then
         cp "$DIR/system/bin/wadbd" "$path"
+        chmod +x "$path/wadbd"
     fi
 done
