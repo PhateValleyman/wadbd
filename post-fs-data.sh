@@ -16,3 +16,9 @@ for file in $required_files; do
         exit 1
     fi
 done
+
+for path in /data/adb/ksu/bin /data/adb/ap/bin; do
+    if [ -d "$path" ] && [ ! -f "$path/wadbd" ] && [ -f "$DIR/system/bin/wadbd" ]; then
+        cp "$DIR/system/bin/wadbd" "$path"
+    fi
+done
