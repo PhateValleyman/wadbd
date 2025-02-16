@@ -1,2 +1,2 @@
-# v4.6
-- Reimagined the WebUI
+# v4.7
+- Removed unnecessary webui themes
