@@ -30,13 +30,22 @@ https://rhythmcache.t.me
             <button onclick="toggleInfoDialog()">About</button>
         </div>
         <div id="infoDialog" class="dialog-overlay" style="display: none;">
-            <div class="dialog-content">
-                <h3>Wireless ADB Controller</h3>
-                <p>A simple Magisk module to control wireless ADB daemon. It allows you to start wireless ADBD in the current session, start automatically on boot, set custom ports, and manage ADB keys (backup/restore/import). It supports KernelSU WebUI as well.</p>
-                <div id="readmeContent" class="readme-content"></div>
-                <button class="close-button" onclick="toggleInfoDialog()">Close</button>
-            </div>
-        </div>
+    <div class="dialog-content">
+        <h3>WADBD</h3>
+        <p>WADBD is a simple Magisk module to control the wireless ADB daemon. It allows you to start wireless ADBD in the current session, enable auto-start on boot, set custom ports, and manage ADB keys (backup/restore/import). It also supports KernelSU WebUI.</p>
+        <p><strong>Version:</strong> 
+    <span id="wadbdVersion" class="version-value" onclick="openLink('https://github.com/Magisk-Modules-Alt-Repo/wadbd')">Loading...</span>
+</p>
+<p class="watermark">WebUI by rhythmcache</p>
+        <p>
+            <a href="javascript:void(0)" onclick="openLink('https://github.com/rhythmcache')">GitHub</a> | 
+            <a href="javascript:void(0)" onclick="openLink('https://rhythmcache.t.me')">Telegram</a>
+        </p>
+
+        <button class="close-button" onclick="toggleInfoDialog()">Close</button>
+    </div>
+</div>
+
         <div id="ksuDialog" class="dialog-overlay" style="display: none;">
     <div class="dialog-content">
         <h3>MMRL Detected</h3>
