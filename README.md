@@ -38,8 +38,8 @@ wadbd --clear-keys            - Revokes all authorized Keys
 - You Can Also Control This Module Using Kernel Su or Apatch WebUI
 
 <div style="display: flex; justify-content: center; align-items: center;">
-  <img src="https://github.com/PhateValleyman/wireless-adb-controller/raw/main/e1.png" alt="WebUI Screenshot" width="45%">
-  <img src="https://github.com/PhateValleyman/wireless-adb-controller/raw/main/e2.png" alt="KernelSU Screenshot" width="45%">
+    <img src="https://github.com/rhythmcache/wireless-adb-controller/raw/main/e1.png" alt="WebUI Screenshot" width="45%">
+  <img src="https://github.com/rhythmcache/wireless-adb-controller/raw/main/e2.png" alt="KernelSU Screenshot" width="45%">
 </div>
 
 
