@@ -89,7 +89,7 @@ check_wireless_adb_status() {
     fi
     
     # Check if wireless ADB is enabled on boot
-    module_path="/data/adb/modules/wadbd/service.sh"
+    module_path="/data/adb/modules/umbrella-wadbd/service.sh"
     if [ -f "$module_path" ]; then
         boot_port=$(awk '/setprop service.adb.tcp.port/ {print $3}' "$module_path")
         if [ -n "$boot_port" ]; then
@@ -111,7 +111,7 @@ enable_on_boot() {
         exit 1
     fi
 
-    local module_path="/data/adb/modules/wadbd"
+    local module_path="/data/adb/modules/umbrella-wadbd"
     mkdir -p "$module_path"
     cat >"$module_path/service.sh" <<EOF
 #!/system/bin/sh
@@ -130,7 +130,7 @@ su -lp 2000 -c "cmd notification post -S bigtext -t 'WADBD' 'Tag' 'Wireless ADB 
 }
 
 disable_on_boot() {
-    local module_path="/data/adb/modules/wadbd"
+    local module_path="/data/adb/modules/umbrella-wadbd"
     if [ -f "$module_path/service.sh" ]; then
         rm -f "$module_path/service.sh"
         echo -e "${GREEN} => Wireless ADB will no longer be enabled on boot.${NC}"
