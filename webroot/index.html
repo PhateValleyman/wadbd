@@ -1,47 +1,47 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-    <title>Správce ADB</title>
-    <link rel="stylesheet" type="text/css" href="https://mui.kernelsu.org/mmrl/insets.css">
-    <link rel="stylesheet" type="text/css" href="https://mui.kernelsu.org/mmrl/colors.css">
-    <link rel="stylesheet" href="assets/index.min.css">
+    <meta charset="UTF-8"> <!-- Nastavení znakové sady dokumentu -->
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"> <!-- Meta tag pro responzivní design -->
+    <title>Správce ADB</title> <!-- Titulek webové stránky -->
+    <link rel="stylesheet" type="text/css" href="https://mui.kernelsu.org/mmrl/insets.css"> <!-- Externí CSS pro okraje -->
+    <link rel="stylesheet" type="text/css" href="https://mui.kernelsu.org/mmrl/colors.css"> <!-- Externí CSS pro barvy -->
+    <link rel="stylesheet" href="assets/index.min.css"> <!-- Interní CSS -->
 </head>
-
 <body>
     <div class="mmrl-safe-area">
         <!-- Hlavička -->
         <div class="header">
-            <button class="settings-button" onclick="toggleSettingsMenu()">☰</button>
-            <h1>Správce ADB</h1>
+            <button class="settings-button" onclick="toggleSettingsMenu()">☰</button> <!-- Tlačítko pro zobrazení nastavení -->
+            <h1>Správce ADB</h1> <!-- Hlavní nadpis stránky -->
         </div>
 
         <!-- Nastavení -->
         <div id="settingsMenu" class="settings-menu" style="display:none">
-            <button onclick="toggleTheme()">Změnit motiv</button>
+            <button onclick="toggleTheme()">Změnit motiv</button> <!-- Tlačítko pro změnu motivu -->
+            <button onclick="navigateToRebootPage()">Reboot</button> <!-- Nové tlačítko pro reboot -->
             <div class="setting-item">
-                <span>Notifikace</span>
+                <span>Notifikace</span> <!-- Štítek pro přepínač notifikací -->
                 <label class="toggle-switch">
-                    <input type="checkbox" id="notificationToggle">
+                    <input type="checkbox" id="notificationToggle"> <!-- Přepínač notifikací -->
                     <span class="toggle-slider"></span>
                 </label>
             </div>
-            <button onclick="toggleInfoDialog()">O aplikaci</button>
+            <button onclick="toggleInfoDialog()">O aplikaci</button> <!-- Tlačítko pro zobrazení dialogu s informacemi o aplikaci -->
         </div>
 
         <!-- Dialogové okno Informace -->
         <div id="infoDialog" class="dialog-overlay" style="display:none">
             <div class="dialog-content">
                 <h3>WADBD</h3>
-                <p>WADBD je jednoduchý Magisk modul pro ovládání bezdrátového ADB démona. Umožňuje spouštět bezdrátové ADBD v aktuální relaci, automatické spouštění při startu, nastavení vlastních portů a správu ADB klíčů (zálohování/obnovení/import). Podporuje také KernelSU WebUI.</p>
-                <p><strong>Verze:</strong> <span id="wadbdVersion" class="version-value" onclick='openLink("https://github.com/Magisk-Modules-Alt-Repo/wadbd")'>Načítání...</span></p>
-                <p class="watermark">WebUI vytvořil PhateValleyman</p>
+                <p>WADBD je jednoduchý Magisk modul pro ovládání bezdrátového ADB démona.</p>
+                <p><strong>Verze:</strong> <span id="wadbdVersion" class="version-value" onclick='openLink("https://github.com/Magisk-Modules-Alt-Repo/wadbd")'>Načítání...</span></p> <!-- Informace o verzi -->
+                <p class="watermark">WebUI vytvořil PhateValleyman</p> <!-- Vodotisk -->
                 <p>
                     <a href="javascript:void(0)" onclick='openLink("https://github.com/rhythmcache")'>GitHub</a> | 
-                    <a href="javascript:void(0)" onclick='openLink("https://rhythmcache.t.me")'>Telegram</a>
+                    <a href="javascript:void(0)" onclick='openLink("https://rhythmcache.t.me")'>Telegram</a> <!-- Odkazy na GitHub a Telegram -->
                 </p>
-                <button class="close-button" onclick="toggleInfoDialog()">Zavřít</button>
+                <button class="close-button" onclick="toggleInfoDialog()">Zavřít</button> <!-- Tlačítko pro zavření dialogu -->
             </div>
         </div>
 
@@ -50,14 +50,14 @@
             <div class="dialog-content">
                 <h3>MMRL Detekováno</h3>
                 <p>Tento modul vyžaduje přístup k KernelSU Advanced API.</p>
-                <button id="requestKsuApiButton" class="text-button">Udělit přístup</button>
+                <button id="requestKsuApiButton" class="text-button">Udělit přístup</button> <!-- Tlačítko pro požadavek na přístup k KernelSU API -->
             </div>
         </div>
 
         <div id="unsupportedDialog" class="dialog-overlay" style="display:none">
             <div class="dialog-content">
                 <h3>Nepodporované prostředí</h3>
-                <p>ksu není definováno. Vaše prostředí není podporováno.</p>
+                <p>ksu není definováno. Vaše prostředí není podporováno.</p> <!-- Zpráva o nepodporovaném prostředí -->
             </div>
         </div>
 
@@ -71,25 +71,25 @@
                     <div class="setting-item">
                         <span>USB Ladění</span>
                         <label class="toggle-switch">
-                            <input type="checkbox" id="usbDebugToggle">
+                            <input type="checkbox" id="usbDebugToggle"> <!-- Přepínač USB ladění -->
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
                     <div class="setting-item">
                         <span>Bezdrátové ADB</span>
                         <label class="toggle-switch">
-                            <input type="checkbox" id="wirelessToggle">
+                            <input type="checkbox" id="wirelessToggle"> <!-- Přepínač bezdrátového ADB -->
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
                     <div class="port-control">
-                        <input type="number" id="portInput" class="port-input" placeholder="Port (výchozí: 5555)" value="5555">
-                        <button id="changePortBtn" class="action-button">Změnit port</button>
+                        <input type="number" id="portInput" class="port-input" placeholder="Port (výchozí: 5555)" value="5555"> <!-- Pole pro zadání portu -->
+                        <button id="changePortBtn" class="action-button">Změnit port</button> <!-- Tlačítko pro změnu portu -->
                     </div>
                     <div class="setting-item">
                         <span>Povolit při startu</span>
                         <label class="toggle-switch">
-                            <input type="checkbox" id="bootToggle">
+                            <input type="checkbox" id="bootToggle"> <!-- Přepínač povolení při startu -->
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
@@ -99,24 +99,24 @@
             <!-- Další sekce -->
             <div class="card">
                 <h2>Stav</h2>
-                <div class="status" id="statusOutput"></div>
+                <div class="status" id="statusOutput"></div> <!-- Výstup stavu -->
             </div>
             <div class="card">
                 <h2>Návod k připojení</h2>
-                <div class="connection-info" id="connectionInfo"></div>
+                <div class="connection-info" id="connectionInfo"></div> <!-- Informace o připojení -->
             </div>
             <div class="card">
                 <h2>Informace o zařízení</h2>
-                <div class="device-info" id="deviceInfo"></div>
+                <div class="device-info" id="deviceInfo"></div> <!-- Informace o zařízení -->
             </div>
         </div>
 
         <!-- Patička -->
         <footer class="footer">
-            <img src="assets/github.png" alt="GitHub" onclick='openLink("https://github.com/PhateValleyman")'>
-            <img src="assets/telegram.png" alt="Telegram" onclick='openLink("https://t.me/PhateValleyman")'>
+            <img src="assets/github.png" alt="GitHub" onclick='openLink("https://github.com/PhateValleyman")'> <!-- Odkaz na GitHub -->
+            <img src="assets/telegram.png" alt="Telegram" onclick='openLink("https://t.me/PhateValleyman")'> <!-- Odkaz na Telegram -->
         </footer>
     </div>
-    <script src="assets/index.min.js"></script>
+    <script src="assets/index.min.js"></script> <!-- JavaScript soubor -->
 </body>
 </html>

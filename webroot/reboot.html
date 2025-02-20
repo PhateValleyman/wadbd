@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restart</title>
+    <link rel="stylesheet" href="assets/reboot.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Restart zařízení</h1>
+        <p>Vyberte jednu z následujících možností restartu vašeho zařízení. Ujistěte se, že jste uložili veškerou práci.</p>
+        <div class="reboot-options">
+            <button onclick="confirmReboot('normal')">Normální restart</button>
+            <button onclick="confirmReboot('recovery')">Restart do Recovery</button>
+            <button onclick="confirmReboot('bootloader')">Restart do Bootloader</button>
+        </div>
+    </div>
+    <script>
+        function confirmReboot(type) {
+            if (confirm('Opravdu chcete restartovat zařízení?')) {
+                rebootDevice(type);
+            }
+        }
+
+        function rebootDevice(type) {
+            // Implementace restartu zařízení podle typu
+            console.log(`Zařízení bude restartováno: ${type}`);
+        }
+    </script>
+</body>
+</html>
